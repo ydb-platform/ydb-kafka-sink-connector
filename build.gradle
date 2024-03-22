@@ -1,0 +1,101 @@
+plugins {
+    id 'java'
+}
+
+group = 'ydb.kafka.connector'
+version = '1.0-SNAPSHOT'
+
+ext {
+    set('connectApi', '2.8.0')
+    set('slf4jSimple', '1.7.30')
+    set('jsonPath', '2.6.0')
+}
+
+repositories {
+    mavenCentral()
+}
+
+allprojects { // на  более новые версии ругается Kafka Connect
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            sourceCompatibility = '1.8'
+            targetCompatibility = '1.8'
+        }
+    }
+}
+
+dependencies {
+    implementation "org.apache.kafka:connect-api:${connectApi}"
+    implementation "org.slf4j:slf4j-simple:${slf4jSimple}"
+
+    implementation "tech.ydb:ydb-sdk-bom:2.1.11"
+    implementation "tech.ydb:ydb-sdk-scheme:2.1.11"
+    implementation "tech.ydb:ydb-sdk-table:2.1.11"
+    implementation "tech.ydb:ydb-sdk-topic:2.1.11"
+    implementation "tech.ydb:ydb-sdk-coordination:2.1.11"
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Путь к директории для загрузки зависимостей.
+def downloadPath = "${buildDir.toString()}/libs"
+
+def libs = [ // библиотеки, которые надо добавить в kafka/libs для запуска коннектора
+        "perfmark-api",
+        "guava",
+        "ydb-sdk-core",
+        "ydb-sdk-table",
+        "ydb-auth-api",
+        "ydb-proto-api",
+        "grpc-stub",
+        "grpc-protobuf",
+        "grpc-netty-shaded",
+        "grpc-protobuf-lite",
+        "grpc-core",
+        "grpc-api",
+        "grpc-context",
+        "protobuf-java" // + не забыть добавить сам исполняемый коннектор
+]
+
+tasks.register('downloadDependencies', Copy) {
+    // Гарантируем, что задачи компиляции выполняются до загрузки зависимостей,
+    // чтобы все нужные артефакты были разрешены
+    dependsOn configurations.runtimeClasspath
+    dependsOn configurations.compileClasspath
+    // Создание директории, если она не существует
+    File libsDir = file(downloadPath)
+    if (!libsDir.exists()) {
+        libsDir.mkdirs()
+    }
+    // Конфигурации, для которых следует скачать зависимости
+    // Можно добавить другие конфигурации в зависимости от потребностей проекта
+    configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+        if (libs.contains(artifact.name)) {
+            from artifact.file
+        }
+    }
+    configurations.compileClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+        if (libs.contains(artifact.name)) {
+            from artifact.file
+        }
+    }
+
+    // Место назначения для загрузки
+    into downloadPath
+}
+
+tasks.register("prepareKafkaConnectDependencies") {
+    dependsOn build
+    dependsOn downloadDependencies
+}
