@@ -41,3 +41,4 @@ bin/
 ### Docker Compose ###
 docker-compose/ydb_certs/*
 docker-compose/ydb_data/*
+docker-compose/tmp/*
