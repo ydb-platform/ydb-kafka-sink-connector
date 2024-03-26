@@ -47,9 +47,8 @@ public class KafkaSinkConnector extends SinkConnector {
         }
     }
 
-    public void createTable() { // разумно ли сразу создавать таблицу (у постгреса таблица создается при первой записи, а не при подключении)
-        // TODO включить автосоздание в зависимости от конфига
-        String sourceTopicName = configProperties.get(SOURCE_TOPIC); // TODO сделать несколько топиков
+    public void createTable() {
+        String sourceTopicName = configProperties.get(SOURCE_TOPIC);
         AuthProvider authProvider = NopAuthProvider.INSTANCE;
 
         try (GrpcTransport transport = GrpcTransport.forConnectionString(SINK_SERVER_CONNECTION_STRING)

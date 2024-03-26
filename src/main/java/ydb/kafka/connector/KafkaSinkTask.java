@@ -52,11 +52,11 @@ public class KafkaSinkTask extends SinkTask {
     }
 
     @Override
-    public void put(Collection<SinkRecord> records) { // note: полезно посмотреть на чужие реализации
+    public void put(Collection<SinkRecord> records) {
         for (SinkRecord record : records) {
             if (record.value() != null) {
                 try {
-                    Record<String, String> parseRecord = DataUtility.createRecord(record); // TODO парсить в зависимости от схемы
+                    Record<String, String> parseRecord = DataUtility.createRecord(record);
                     saveRecord(parseRecord);
                 } catch (Exception e) {
                     log.error(e.getMessage() + " / " + connectorName, e);
@@ -66,10 +66,10 @@ public class KafkaSinkTask extends SinkTask {
 
     }
 
-    private void saveRecord(Record<String, String> record) { // TODO разобраться с другими типами данных
+    private void saveRecord(Record<String, String> record) {
         String queryTemplate
-                = "UPSERT INTO mytopic (partition, offset, key, value) " // TODO хардкод топика
-                + "VALUES ({0}, {1}, \"{2}\", \"{3}\");";
+                = "UPSERT INTO " + KafkaSinkConnectorConfig.SOURCE_TOPIC_DEFAULT_VALUE +  " (partition, offset, key, value)"
+                + " VALUES ({0}, {1}, \"{2}\", \"{3}\");";
 
         String query = MessageFormat.format(queryTemplate, record.partition, record.offset, record.key, record.value);
 
