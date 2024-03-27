@@ -1,0 +1,4 @@
+[versions]
+ydbSdk = "2.1.11"
+lombok = "1.18.30"
+junit="5.9.1"
