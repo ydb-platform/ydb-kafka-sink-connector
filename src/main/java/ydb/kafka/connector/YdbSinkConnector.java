@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class KafkaSinkConnector extends SinkConnector {
+public class YdbSinkConnector extends SinkConnector {
 
     private Map<String, String> configProperties;
 
