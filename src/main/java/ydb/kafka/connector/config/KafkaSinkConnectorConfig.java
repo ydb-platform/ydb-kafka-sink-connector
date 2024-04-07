@@ -40,6 +40,11 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
                     YDB_DATABASE_DEFAULT_VALUE);
     public static final String SINK_SERVER_CONNECTION_DOC = "YDB connection string";
 
+    public static final String BATCH_SIZE = "batch.size";
+    private static final int BATCH_SIZE_DEFAULT_VALUE = 1000;
+    private static final String BATCH_SIZE_DOC =
+            "Specifies how many records to attempt to batch together for insertion into the destination"
+                    + " table, when possible.";
 
     public static ConfigDef CONFIG = new ConfigDef()
             .define(SOURCE_TOPIC, Type.STRING, SOURCE_TOPIC_DEFAULT_VALUE, Importance.HIGH, SOURCE_TOPIC_DOC)
@@ -48,6 +53,7 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
             .define(GRPC_TLS_PORT, Type.INT, GRPC_TLS_PORT_DEFAULT_VALUE, Importance.HIGH, GRPC_TLS_PORT_DOC)
             .define(YDB_DATABASE, Type.STRING, YDB_DATABASE_DEFAULT_VALUE, Importance.HIGH, YDB_DATABASE_DOC)
             .define(SINK_SERVER_CONNECTION_STRING, Type.STRING, SINK_SERVER_CONNECTION_STRING_VALUE, Importance.HIGH, SINK_SERVER_CONNECTION_DOC)
+            .define(BATCH_SIZE, Type.INT, BATCH_SIZE_DEFAULT_VALUE, Importance.MEDIUM, BATCH_SIZE_DOC)
             ;
 
     public static KafkaSinkConnectorConfig create(Map<String, String> props) {
