@@ -1,5 +1,6 @@
 package ydb.kafka.connector.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.config.AbstractConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.common.config.ConfigDef.Type;
@@ -7,6 +8,7 @@ import org.apache.kafka.common.config.ConfigDef.Importance;
 
 import java.util.Map;
 
+@Slf4j
 public class KafkaSinkConnectorConfig extends AbstractConfig {
 
     public static final String SOURCE_TOPIC = "topics";
@@ -22,23 +24,41 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
     public static final String YDB_HOSTNAME_DEFAULT_VALUE = "localhost";
     public static final String YDB_HOSTNAME_DOC = "Define YDB server hostname";
 
+    public static final String YDB_GRPC_TLS_ENABLED = "ydb.grpc.tls.enabled";
+    public static final boolean YDB_GRPC_TLS_ENABLED_DEFAULT_VALUE = false;
+    public static final String YDB_GRPC_TLS_ENABLED_DOC = "If YDB_GRPC_TLS_ENABLED_DOC is true, then the gRPCs protocol is used, otherwise gRPC";
 
-    public static final String GRPC_TLS_PORT = "ydb.grpc.port";
-    public static final Integer GRPC_TLS_PORT_DEFAULT_VALUE = 2136;
-    public static final String GRPC_TLS_PORT_DOC = "Define YDB server grpc port";
+    public static final String YDB_GRPC_PORT = "ydb.grpc.port";
+    public static final Integer YDB_GRPC_PORT_DEFAULT_VALUE = 2136;
+    public static final String YDB_GRPC_PORT_DOC = "Define YDB server grpc port";
 
+    public static final String YDB_AUTH_PROVIDER_TYPE = "ydb.auth.provider.type";
+    public static final String YDB_AUTH_PROVIDER_TYPE_DEFAULT_VALUE = null;
+    public static final String YDB_AUTH_PROVIDER_TYPE_DOC = "Define YDB auth type";
+
+    public static final String YDB_AUTH_ACCESS_TOKEN = "ydb.auth.provider.access.token";
+    public static final String YDB_AUTH_ACCESS_TOKEN_DEFAULT_VALUE = null;
+    public static final String YDB_AUTH_ACCESS_TOKEN_DOC = "Define YDB access token";
+
+    public static final String YDB_AUTH_SA_KEY_FILE = "ydb.auth.provider.sa.key.file";
+    public static final String YDB_AUTH_SA_KEY_FILE_DEFAULT_VALUE = null;
+    public static final String YDB_AUTH_SA_KEY_FILE_DOC = "Define YDB service account file";
+
+    public static final String YDB_AUTH_USERNAME = "ydb.auth.provider.username";
+    public static final String YDB_AUTH_USERNAME_DEFAULT_VALUE = null;
+    public static final String YDB_AUTH_USERNAME_DOC = "Define YDB username";
+
+    public static final String YDB_AUTH_PASSWORD = "ydb.auth.provider.password";
+    public static final String YDB_AUTH_PASSWORD_DEFAULT_VALUE = null;
+    public static final String YDB_AUTH_PASSWORD_DOC = "Define YDB auth type";
 
     public static final String YDB_DATABASE = "ydb.database";
-    public static final String YDB_DATABASE_DEFAULT_VALUE = "/local";
+    public static final String YDB_DATABASE_DEFAULT_VALUE = null;
     public static final String YDB_DATABASE_DOC = "Define YDB sink database name";
 
-    public static final String SINK_SERVER_CONNECTION_STRING = "ydb.connection.string";
-    public static final String SINK_SERVER_CONNECTION_STRING_VALUE =
-            makeConnectionString(
-                    YDB_HOSTNAME_DEFAULT_VALUE,
-                    GRPC_TLS_PORT_DEFAULT_VALUE,
-                    YDB_DATABASE_DEFAULT_VALUE);
-    public static final String SINK_SERVER_CONNECTION_DOC = "YDB connection string";
+    public static final String YDB_CONNECTION_STRING = "ydb.connection.string";
+    public static final String YDB_CONNECTION_STRING_DEFAULT_VALUE = null;
+    public static final String YDB_CONNECTION_STRING_DOC = "YDB connection string";
 
     public static final String BATCH_SIZE = "batch.size";
     private static final int BATCH_SIZE_DEFAULT_VALUE = 1000;
@@ -50,18 +70,20 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
             .define(SOURCE_TOPIC, Type.STRING, SOURCE_TOPIC_DEFAULT_VALUE, Importance.HIGH, SOURCE_TOPIC_DOC)
             .define(SINK_BOOTSTRAP_SERVER, Type.STRING, SINK_BOOTSTRAP_SERVER_DEFAULT_VALUE, Importance.HIGH, SINK_BOOTSTRAP_SERVER_DOC)
             .define(YDB_HOSTNAME, Type.STRING, YDB_HOSTNAME_DEFAULT_VALUE, Importance.HIGH, YDB_HOSTNAME_DOC)
-            .define(GRPC_TLS_PORT, Type.INT, GRPC_TLS_PORT_DEFAULT_VALUE, Importance.HIGH, GRPC_TLS_PORT_DOC)
+            .define(YDB_GRPC_PORT, Type.INT, YDB_GRPC_PORT_DEFAULT_VALUE, Importance.HIGH, YDB_GRPC_PORT_DOC)
+            .define(YDB_GRPC_TLS_ENABLED, Type.BOOLEAN, YDB_GRPC_TLS_ENABLED_DEFAULT_VALUE, Importance.HIGH, YDB_GRPC_TLS_ENABLED_DOC)
             .define(YDB_DATABASE, Type.STRING, YDB_DATABASE_DEFAULT_VALUE, Importance.HIGH, YDB_DATABASE_DOC)
-            .define(SINK_SERVER_CONNECTION_STRING, Type.STRING, SINK_SERVER_CONNECTION_STRING_VALUE, Importance.HIGH, SINK_SERVER_CONNECTION_DOC)
+            .define(YDB_CONNECTION_STRING, Type.STRING, YDB_CONNECTION_STRING_DEFAULT_VALUE, Importance.MEDIUM, YDB_CONNECTION_STRING_DOC)
             .define(BATCH_SIZE, Type.INT, BATCH_SIZE_DEFAULT_VALUE, Importance.MEDIUM, BATCH_SIZE_DOC)
+            .define(YDB_AUTH_PROVIDER_TYPE, Type.STRING, YDB_AUTH_PROVIDER_TYPE_DEFAULT_VALUE, Importance.HIGH, YDB_AUTH_PROVIDER_TYPE_DOC)
+            .define(YDB_AUTH_ACCESS_TOKEN, Type.STRING, YDB_AUTH_ACCESS_TOKEN_DEFAULT_VALUE, Importance.MEDIUM, YDB_AUTH_ACCESS_TOKEN_DOC)
+            .define(YDB_AUTH_SA_KEY_FILE, Type.STRING, YDB_AUTH_SA_KEY_FILE_DEFAULT_VALUE, Importance.MEDIUM, YDB_AUTH_SA_KEY_FILE_DOC)
+            .define(YDB_AUTH_USERNAME, Type.STRING, YDB_AUTH_USERNAME_DEFAULT_VALUE, Importance.MEDIUM, YDB_AUTH_USERNAME_DOC)
+            .define(YDB_AUTH_PASSWORD, Type.STRING, YDB_AUTH_PASSWORD_DEFAULT_VALUE, Importance.MEDIUM, YDB_AUTH_PASSWORD_DOC)
             ;
 
     public static KafkaSinkConnectorConfig create(Map<String, String> props) {
-        String hostname = props.get(YDB_HOSTNAME);
-        Integer port = Integer.parseInt(props.get(GRPC_TLS_PORT));
-        String databaseName = props.get(YDB_DATABASE);
-
-        props.put(SINK_SERVER_CONNECTION_STRING, makeConnectionString(hostname, port, databaseName));
+        props.put(YDB_CONNECTION_STRING, makeConnectionString(props));
 
         return new KafkaSinkConnectorConfig(props);
     }
@@ -70,7 +92,17 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
         super(CONFIG, props);
     }
 
-    private static String makeConnectionString(String hostname, Integer port, String databaseName) {
-        return String.format("grpc://%s:%d%s", hostname, port, databaseName);
+    private static String makeConnectionString(Map<String, String> props) {
+        String connectionString = props.get(YDB_CONNECTION_STRING);
+        if (connectionString != null) {
+            return connectionString;
+        }
+
+        String hostname = props.get(YDB_HOSTNAME);
+        Integer port = Integer.parseInt(props.get(YDB_GRPC_PORT));
+        String databaseName = props.get(YDB_DATABASE);
+        String grpc = Boolean.parseBoolean(props.get(YDB_GRPC_TLS_ENABLED)) ? "grpcs" : "grpc";
+
+        return String.format("%s://%s:%d%s", grpc, hostname, port, databaseName);
     }
 }

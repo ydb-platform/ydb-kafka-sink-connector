@@ -1,4 +1,7 @@
 [versions]
 ydbSdk = "2.1.11"
+ydbAuth = "2.2.0"
 lombok = "1.18.30"
 junit="5.9.1"
+kafkaConnectApi="3.7.0"
+slf4jSimple="1.7.30"

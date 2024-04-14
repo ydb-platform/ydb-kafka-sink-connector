@@ -5,28 +5,25 @@ plugins {
 group = 'ydb.kafka.connector'
 version = '1.0-SNAPSHOT'
 
-ext {
-    set('connectApi', '2.8.0')
-    set('slf4jSimple', '1.7.30')
-    set('jsonPath', '2.6.0')
-}
-
 repositories {
     mavenCentral()
 }
 
-allprojects { // на  более новые версии ругается Kafka Connect
+allprojects {
     tasks.withType(JavaCompile).tap {
         configureEach {
-            sourceCompatibility = '1.8'
-            targetCompatibility = '1.8'
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
         }
     }
 }
 
 var ydbSdkVersion = libs.versions.ydbSdk.get()
+var ydbAuthVersion = libs.versions.ydbAuth.get()
 var lombokVersion = libs.versions.lombok.get()
 var junitVersion = libs.versions.junit.get()
+var connectApi = libs.versions.kafkaConnectApi.get()
+var slf4jSimple = libs.versions.slf4jSimple.get()
 
 dependencies {
     implementation "org.apache.kafka:connect-api:${connectApi}"
@@ -37,6 +34,7 @@ dependencies {
     implementation "tech.ydb:ydb-sdk-table:${ydbSdkVersion}"
     implementation "tech.ydb:ydb-sdk-topic:${ydbSdkVersion}"
     implementation "tech.ydb:ydb-sdk-coordination:${ydbSdkVersion}"
+    implementation "tech.ydb.auth:yc-auth-provider-shaded:${ydbAuthVersion}"
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
@@ -56,20 +54,63 @@ test {
 def downloadPath = "${buildDir.toString()}/libs"
 
 def libs = [ // библиотеки, которые надо добавить в kafka/libs для запуска коннектора
-        "perfmark-api",
-        "guava",
-        "ydb-sdk-core",
-        "ydb-sdk-table",
-        "ydb-auth-api",
-        "ydb-proto-api",
-        "grpc-stub",
-        "grpc-protobuf",
-        "grpc-netty-shaded",
-        "grpc-protobuf-lite",
-        "grpc-core",
-        "grpc-api",
-        "grpc-context",
-        "protobuf-java" // + не забыть добавить сам исполняемый коннектор
+             "perfmark-api",
+             "guava",
+             "ydb-sdk-core",
+             "ydb-sdk-table",
+             "ydb-auth-api",
+             "ydb-proto-api",
+             "grpc-stub",
+             "grpc-protobuf",
+             "grpc-netty-shaded",
+             "grpc-protobuf-lite",
+             "grpc-core",
+             "grpc-api",
+             "grpc-context",
+             "protobuf-java",
+             "yc-auth-provider-shaded",
+             "bcprov-jdk15on",
+             "ydb-sdk-coordination",
+             "ydb-sdk-scheme",
+             "animal-sniffer-annotations",
+             "annotations",
+             "annotations",
+             "apiguardian-api",
+             "checker-compat-qual",
+             "commons-logging",
+             "connect-api",
+             "error_prone_annotations",
+             "failureaccess",
+             "grpc-services",
+             "gson",
+             "j2objc-annotations",
+             "jackson-annotations",
+             "jackson-core",
+             "jackson-databind",
+             "javax.annotation-api",
+             "javax.ws.rs-api",
+             "jjwt-api",
+             "jjwt-impl",
+             "jjwt-jackson",
+             "jsr305",
+             "junit-jupiter-api",
+             "junit-jupiter-engine",
+             "junit-jupiter-params",
+             "junit-jupiter",
+             "junit-platform-commons",
+             "junit-platform-engine",
+             "kafka-clients",
+             "lombok",
+             "lz4-java",
+             "lzo-core",
+             "opentest4j",
+             "proto-google-common-protos",
+             "protobuf-java-util",
+             "slf4j-api",
+             "slf4j-simple",
+             "snappy-java",
+             "ydb-sdk-topic",
+             "zstd-jni", // + не забыть добавить сам исполняемый коннектор
 ]
 
 tasks.register('downloadDependencies', Copy) {
