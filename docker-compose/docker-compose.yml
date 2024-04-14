@@ -35,6 +35,7 @@ services:
       - MON_PORT=8765
       - YDB_USE_IN_MEMORY_PDISKS=true
     image: cr.yandex/yc/yandex-docker-local-ydb:latest
+    profiles: [ "ydb-local" ]
 
   init-kafka:
     image: confluentinc/cp-kafka

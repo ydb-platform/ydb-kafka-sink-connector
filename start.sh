@@ -16,7 +16,7 @@ cp -r properties $KAFKA_DIR
 echo "START"
 cd "$PROJECT_DIR" || exit
 mkdir $COMPOSE_DIR/ydb_certs $COMPOSE_DIR/ydb_data
-docker compose -f ./docker-compose/docker-compose.yml up -d --wait --quiet-pull
+docker compose --profile=ydb-local -f ./docker-compose/docker-compose.yml up -d --wait --quiet-pull
 cd $KAFKA_DIR || exit
-./bin/connect-standalone.sh properties/worker.properties properties/ydb-sink.properties
+./bin/connect-standalone.sh properties/worker.properties properties/ydb-sink-local.properties
 cd "$PROJECT_DIR" || exit

@@ -9,9 +9,6 @@ import tech.ydb.core.Status;
 import tech.ydb.table.SessionRetryContext;
 import tech.ydb.table.settings.BulkUpsertSettings;
 import tech.ydb.table.values.*;
-import ydb.kafka.connector.config.KafkaSinkConnectorConfig;
-
-import static ydb.kafka.connector.config.KafkaSinkConnectorConfig.*;
 
 @Slf4j
 public class BufferedRecords {
@@ -23,12 +20,14 @@ public class BufferedRecords {
     private final String destinationTable;
 
     public BufferedRecords(
-            KafkaSinkConnectorConfig config,
+            int batchSize,
+            String database,
+            String destinationTable,
             SessionRetryContext retryCtx) {
         this.retryCtx = retryCtx;
-        this.batchSize = config.getInt(BATCH_SIZE);
-        this.database = config.getString(YDB_DATABASE);
-        this.destinationTable = config.getString(SOURCE_TOPIC);
+        this.batchSize = batchSize;
+        this.database = database;
+        this.destinationTable = destinationTable;
     }
 
     public List<Record<String, String>> add(SinkRecord record) {

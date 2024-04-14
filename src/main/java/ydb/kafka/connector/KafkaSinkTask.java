@@ -13,7 +13,6 @@ import java.util.*;
 
 @Slf4j
 public class KafkaSinkTask extends SinkTask {
-    private KafkaSinkConnectorConfig config;
     private String connectorName;
     private YdbWriter ydbWriter;
 
@@ -27,7 +26,7 @@ public class KafkaSinkTask extends SinkTask {
         try {
             log.info("Task config setting : " + props.toString());
             this.connectorName = props.get("name");
-            this.config = KafkaSinkConnectorConfig.create(props);
+            KafkaSinkConnectorConfig config = KafkaSinkConnectorConfig.create(props);
             this.ydbWriter = new YdbWriter(config);
         } catch (Exception e) {
             throw new ConnectException(e.getMessage(), e);
@@ -50,6 +49,8 @@ public class KafkaSinkTask extends SinkTask {
 
     @Override
     public void stop() {
-        ydbWriter.close();
+        if (ydbWriter != null) {
+            ydbWriter.close();
+        }
     }
 }

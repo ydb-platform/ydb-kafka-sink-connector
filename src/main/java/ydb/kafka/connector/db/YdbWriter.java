@@ -10,8 +10,7 @@ import ydb.kafka.connector.utils.BufferedRecords;
 
 import java.util.Collection;
 
-import static ydb.kafka.connector.config.KafkaSinkConnectorConfig.SOURCE_TOPIC;
-import static ydb.kafka.connector.config.KafkaSinkConnectorConfig.YDB_DATABASE;
+import static ydb.kafka.connector.config.KafkaSinkConnectorConfig.*;
 
 @Slf4j
 public class YdbWriter implements AutoCloseable {
@@ -27,7 +26,11 @@ public class YdbWriter implements AutoCloseable {
 
     public void write(final Collection<SinkRecord> records) {
         final SessionRetryContext sessionRetryContext = sessionProvider.getSession();
-        final BufferedRecords buffer = new BufferedRecords(config, sessionRetryContext);
+        final BufferedRecords buffer = new BufferedRecords(
+                config.getInt(BATCH_SIZE),
+                sessionProvider.getDatabase(),
+                config.getString(SOURCE_TOPIC),
+                sessionRetryContext);
 
         log.debug("Received {} records to write", records.size());
         records.forEach(buffer::add);
@@ -42,7 +45,7 @@ public class YdbWriter implements AutoCloseable {
 
     private void createTable() {
         String sourceTopicName = config.getString(SOURCE_TOPIC);
-        String destinationDbName = config.getString(YDB_DATABASE);
+        String destinationDbName = sessionProvider.getDatabase();
         SessionRetryContext retryCtx = sessionProvider.getSession();
 
         TableDescription seriesTable = TableDescription.newBuilder()
