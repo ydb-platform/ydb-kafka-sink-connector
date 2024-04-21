@@ -66,6 +66,17 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
             "Specifies how many records to attempt to batch together for insertion into the destination"
                     + " table, when possible.";
 
+    public static final String MAX_RETRIES = "max.retries";
+    private static final int MAX_RETRIES_DEFAULT_VALUE = 10;
+    private static final String MAX_RETRIES_DOC =
+            "The maximum number of times to retry on errors before failing the task.";
+
+
+    public static final String RETRY_BACKOFF_MS = "retry.backoff.ms";
+    private static final long RETRY_BACKOFF_MS_DEFAULT_VALUE = 500L;
+    private static final String RETRY_BACKOFF_MS_DOC =
+            "The time in milliseconds to wait following an error before a retry attempt is made.";
+
     public static ConfigDef CONFIG = new ConfigDef()
             .define(SOURCE_TOPIC, Type.STRING, SOURCE_TOPIC_DEFAULT_VALUE, Importance.HIGH, SOURCE_TOPIC_DOC)
             .define(SINK_BOOTSTRAP_SERVER, Type.STRING, SINK_BOOTSTRAP_SERVER_DEFAULT_VALUE, Importance.HIGH, SINK_BOOTSTRAP_SERVER_DOC)
@@ -80,6 +91,8 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
             .define(YDB_AUTH_SA_KEY_FILE, Type.STRING, YDB_AUTH_SA_KEY_FILE_DEFAULT_VALUE, Importance.MEDIUM, YDB_AUTH_SA_KEY_FILE_DOC)
             .define(YDB_AUTH_USERNAME, Type.STRING, YDB_AUTH_USERNAME_DEFAULT_VALUE, Importance.MEDIUM, YDB_AUTH_USERNAME_DOC)
             .define(YDB_AUTH_PASSWORD, Type.STRING, YDB_AUTH_PASSWORD_DEFAULT_VALUE, Importance.MEDIUM, YDB_AUTH_PASSWORD_DOC)
+            .define(MAX_RETRIES, Type.INT, MAX_RETRIES_DEFAULT_VALUE, Importance.LOW, MAX_RETRIES_DOC)
+            .define(RETRY_BACKOFF_MS, Type.LONG, RETRY_BACKOFF_MS_DEFAULT_VALUE, Importance.LOW, RETRY_BACKOFF_MS_DOC)
             ;
 
     public static KafkaSinkConnectorConfig create(Map<String, String> props) {
