@@ -106,8 +106,6 @@ def libs = [ // библиотеки, которые надо добавить �
              "opentest4j",
              "proto-google-common-protos",
              "protobuf-java-util",
-             "slf4j-api",
-             "slf4j-simple",
              "snappy-java",
              "ydb-sdk-topic",
              "zstd-jni", // + не забыть добавить сам исполняемый коннектор
