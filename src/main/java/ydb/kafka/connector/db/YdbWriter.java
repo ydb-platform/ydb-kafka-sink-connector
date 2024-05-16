@@ -53,6 +53,7 @@ public class YdbWriter implements AutoCloseable {
                 .addNonnullColumn("partition", PrimitiveType.Int32)
                 .addNullableColumn("key", PrimitiveType.Text)
                 .addNullableColumn("value", PrimitiveType.Text)
+                .addNonnullColumn("timestamp", PrimitiveType.Timestamp)
                 .setPrimaryKeys("offset", "partition")
                 .build();
 
