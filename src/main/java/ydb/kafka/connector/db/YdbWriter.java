@@ -29,7 +29,7 @@ public class YdbWriter implements AutoCloseable {
         final BufferedRecords buffer = new BufferedRecords(
                 config.getInt(BATCH_SIZE),
                 sessionProvider.getDatabase(),
-                config.getString(SOURCE_TOPIC),
+                config.getString(DESTINATION_TABLE_NAME),
                 sessionRetryContext);
 
         log.debug("Received {} records to write", records.size());
@@ -44,21 +44,22 @@ public class YdbWriter implements AutoCloseable {
     }
 
     private void createTable() {
-        String sourceTopicName = config.getString(SOURCE_TOPIC);
+        String destinationTableName = config.getString(DESTINATION_TABLE_NAME);
         String destinationDbName = sessionProvider.getDatabase();
         SessionRetryContext retryCtx = sessionProvider.getSession();
 
         TableDescription seriesTable = TableDescription.newBuilder()
+                .addNonnullColumn("topic", PrimitiveType.Text)
                 .addNonnullColumn("offset", PrimitiveType.Int64)
                 .addNonnullColumn("partition", PrimitiveType.Int32)
                 .addNullableColumn("key", PrimitiveType.Text)
                 .addNullableColumn("value", PrimitiveType.Text)
                 .addNonnullColumn("timestamp", PrimitiveType.Timestamp)
-                .setPrimaryKeys("offset", "partition")
+                .setPrimaryKeys("topic", "offset", "partition")
                 .build();
 
-        retryCtx.supplyStatus(session -> session.createTable(destinationDbName + "/" + sourceTopicName, seriesTable))
-                .join().expectSuccess("Can't create table /" + sourceTopicName);
+        retryCtx.supplyStatus(session -> session.createTable(destinationDbName + "/" + destinationTableName, seriesTable))
+                .join().expectSuccess("Can't create table /" + destinationTableName);
 
     }
 }

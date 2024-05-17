@@ -62,22 +62,27 @@ public class BufferedRecords {
 
     private Status executeUpdates() {
         StructType seriesType = StructType.of(
-                "offset", PrimitiveType.Int64,
-                "partition", PrimitiveType.Int32,
-                "key", PrimitiveType.Text,
-                "value", PrimitiveType.Text,
-                "timestamp", PrimitiveType.Timestamp
-
+                Map.of(
+                        "topic", PrimitiveType.Text,
+                        "offset", PrimitiveType.Int64,
+                        "partition", PrimitiveType.Int32,
+                        "key", PrimitiveType.Text,
+                        "value", PrimitiveType.Text,
+                        "timestamp", PrimitiveType.Timestamp
+                )
         );
 
         ListValue seriesData = ListType.of(seriesType).newValue(
                 records.stream().map(record ->
                         seriesType.newValue(
-                                "offset", PrimitiveValue.newInt64(record.offset()),
-                                "partition", PrimitiveValue.newInt32(record.partition()),
-                                "key", PrimitiveValue.newText(record.key()),
-                                "value", PrimitiveValue.newText(record.value()),
-                                "timestamp", PrimitiveValue.newTimestamp(record.timestamp())
+                                Map.of(
+                                        "topic", PrimitiveValue.newText(record.topic()),
+                                        "offset", PrimitiveValue.newInt64(record.offset()),
+                                        "partition", PrimitiveValue.newInt32(record.partition()),
+                                        "key", PrimitiveValue.newText(record.key()),
+                                        "value", PrimitiveValue.newText(record.value()),
+                                        "timestamp", PrimitiveValue.newTimestamp(record.timestamp())
+                                )
                         )).collect(Collectors.toList())
         );
 

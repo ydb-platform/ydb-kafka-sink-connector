@@ -12,13 +12,16 @@ import java.util.Map;
 public class KafkaSinkConnectorConfig extends AbstractConfig {
 
     public static final String SOURCE_TOPIC = "topics";
-    public static final String SOURCE_TOPIC_DEFAULT_VALUE = "mytopic";
+    public static final String SOURCE_TOPIC_DEFAULT_VALUE = null;
     public static final String SOURCE_TOPIC_DOC = "Define source topic";
 
     public static final String SINK_BOOTSTRAP_SERVER = "kafka.sink.bootstrap";
     public static final String SINK_BOOTSTRAP_SERVER_DEFAULT_VALUE = "localhost:9092";
     public static final String SINK_BOOTSTRAP_SERVER_DOC = "Define sink bootstrap";
 
+    public static final String DESTINATION_TABLE_NAME = "ydb.table.name";
+    public static final String DESTINATION_TABLE_NAME_DEFAULT_VALUE = "sink_data";
+    public static final String DESTINATION_TABLE_NAME_DOC = "Define destination table name";
 
     public static final String YDB_HOSTNAME = "ydb.host";
     public static final String YDB_HOSTNAME_DEFAULT_VALUE = "localhost";
@@ -69,6 +72,7 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
     public static ConfigDef CONFIG = new ConfigDef()
             .define(SOURCE_TOPIC, Type.STRING, SOURCE_TOPIC_DEFAULT_VALUE, Importance.HIGH, SOURCE_TOPIC_DOC)
             .define(SINK_BOOTSTRAP_SERVER, Type.STRING, SINK_BOOTSTRAP_SERVER_DEFAULT_VALUE, Importance.HIGH, SINK_BOOTSTRAP_SERVER_DOC)
+            .define(DESTINATION_TABLE_NAME, Type.STRING, DESTINATION_TABLE_NAME_DEFAULT_VALUE, Importance.HIGH, DESTINATION_TABLE_NAME_DOC)
             .define(YDB_HOSTNAME, Type.STRING, YDB_HOSTNAME_DEFAULT_VALUE, Importance.HIGH, YDB_HOSTNAME_DOC)
             .define(YDB_GRPC_PORT, Type.INT, YDB_GRPC_PORT_DEFAULT_VALUE, Importance.HIGH, YDB_GRPC_PORT_DOC)
             .define(YDB_GRPC_TLS_ENABLED, Type.BOOLEAN, YDB_GRPC_TLS_ENABLED_DEFAULT_VALUE, Importance.HIGH, YDB_GRPC_TLS_ENABLED_DOC)
