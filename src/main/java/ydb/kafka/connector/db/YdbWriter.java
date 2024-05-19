@@ -51,8 +51,8 @@ public class YdbWriter implements AutoCloseable {
         TableDescription seriesTable = TableDescription.newBuilder()
                 .addNonnullColumn("offset", PrimitiveType.Int64)
                 .addNonnullColumn("partition", PrimitiveType.Int32)
-                .addNullableColumn("key", PrimitiveType.Text)
-                .addNullableColumn("value", PrimitiveType.Text)
+                .addNullableColumn("key", PrimitiveType.Bytes)
+                .addNullableColumn("value", PrimitiveType.Bytes)
                 .setPrimaryKeys("offset", "partition")
                 .build();
 

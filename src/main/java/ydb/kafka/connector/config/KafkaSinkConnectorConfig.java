@@ -19,7 +19,6 @@ public class KafkaSinkConnectorConfig extends AbstractConfig {
     public static final String SINK_BOOTSTRAP_SERVER_DEFAULT_VALUE = "localhost:9092";
     public static final String SINK_BOOTSTRAP_SERVER_DOC = "Define sink bootstrap";
 
-
     public static final String YDB_HOSTNAME = "ydb.host";
     public static final String YDB_HOSTNAME_DEFAULT_VALUE = "localhost";
     public static final String YDB_HOSTNAME_DOC = "Define YDB server hostname";
