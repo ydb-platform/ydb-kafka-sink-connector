@@ -73,8 +73,8 @@ public class BufferedRecords {
                         seriesType.newValue(
                                 "offset", PrimitiveValue.newInt64(record.offset),
                                 "partition", PrimitiveValue.newInt32(record.partition),
-                                "key", PrimitiveValue.newBytes(record.key),
-                                "value", PrimitiveValue.newBytes(record.value)
+                                "key", PrimitiveValue.newBytes(record.key != null ? record.key : new byte[0]),
+                                "value", PrimitiveValue.newBytes(record.value != null ? record.value : new byte[0])
                         )).collect(Collectors.toList())
         );
 
