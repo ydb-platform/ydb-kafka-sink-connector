@@ -39,7 +39,7 @@ public class BufferedRecords {
             long start = System.currentTimeMillis();
             flushed.addAll(flush());
             long end = System.currentTimeMillis();
-            log.info("The flush of batch size {} took {} ms", batchSize, (end - start));
+            log.debug("The flush of batch size {} took {} ms", batchSize, (end - start));
         }
         return flushed;
     }
