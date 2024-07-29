@@ -65,16 +65,19 @@ public class BufferedRecords {
                 "offset", PrimitiveType.Int64,
                 "partition", PrimitiveType.Int32,
                 "key", PrimitiveType.Text,
-                "value", PrimitiveType.Text
+                "value", PrimitiveType.Text,
+                "timestamp", PrimitiveType.Timestamp
+
         );
 
         ListValue seriesData = ListType.of(seriesType).newValue(
                 records.stream().map(record ->
                         seriesType.newValue(
-                                "offset", PrimitiveValue.newInt64(record.offset),
-                                "partition", PrimitiveValue.newInt32(record.partition),
-                                "key", PrimitiveValue.newText(record.key),
-                                "value", PrimitiveValue.newText(record.value)
+                                "offset", PrimitiveValue.newInt64(record.offset()),
+                                "partition", PrimitiveValue.newInt32(record.partition()),
+                                "key", PrimitiveValue.newText(record.key()),
+                                "value", PrimitiveValue.newText(record.value()),
+                                "timestamp", PrimitiveValue.newTimestamp(record.timestamp())
                         )).collect(Collectors.toList())
         );
 
