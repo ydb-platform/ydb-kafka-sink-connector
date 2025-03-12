@@ -15,10 +15,10 @@ public class Record<K, V> {
         this.offset = offset;
     }
 
-    public static Record<String, String> newInstance(SinkRecord sinkRecord) {
+    public static Record<byte[], byte[]> newInstance(SinkRecord sinkRecord) {
         return new Record<>(
-                sinkRecord.key().toString(),
-                sinkRecord.value().toString(),
+                (byte[]) sinkRecord.key(),
+                (byte[]) sinkRecord.value(),
                 sinkRecord.kafkaPartition(),
                 sinkRecord.kafkaOffset()
         );
